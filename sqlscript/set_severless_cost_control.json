@@ -1,0 +1,20 @@
+{
+	"name": "set_severless_cost_control",
+	"properties": {
+		"folder": {
+			"name": "utils"
+		},
+		"content": {
+			"query": "SELECT * FROM sys.dm_external_data_processed;\n\nSELECT * FROM sys.configurations\nWHERE name LIKE 'Data Processed %';\n\nsp_set_data_processed_limit\n    @type = N'monthly', -- 'N' in T-SQL stands for National Language or Unicode. It indicates that the string is a Unicode string literal.\n    @limit_to = 2\n\nsp_set_data_processed_limit\n    @type = N'weekly', -- 'N' in T-SQL stands for National Language or Unicode. It indicates that the string is a Unicode string literal.\n    @limit_to = 1\n\nsp_set_data_processed_limit\n    @type = N'daily', -- 'N' in T-SQL stands for National Language or Unicode. It indicates that the string is a Unicode string literal.\n    @limit_to = 1",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
