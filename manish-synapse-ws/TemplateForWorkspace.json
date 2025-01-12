@@ -255,6 +255,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/8_explore_trip_data_green_parquet')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "nyc_taxi/discovery"
+				},
+				"content": {
+					"query": "USE nyc_taxi_discovery;\n\nSELECT\n    TOP(100) *\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) AS [result];\n\n---- Look for Data Types\n\nEXEC sp_describe_first_result_set N'\nSELECT\n    TOP(100) *\nFROM\n    OPENROWSET(\n        BULK ''trip_data_green_parquet/year=2020/month=01/'',\n        DATA_SOURCE = ''nyc_taxi_data_raw'',\n        FORMAT = ''PARQUET''\n    ) AS [result]';\n\n----- Defining Columns and their Data Types\n\nSELECT\n    TOP(100) *\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) \n    WITH (\n       VendorID INT,\n       lpep_pickup_datetime DATETIME2(7),\n       lpep_dropoff_datetime DATETIME2(7),\n       store_and_fwd_flag CHAR(1),\n       RatecodeID INT,\n       PULocationID INT,\n       DOLocationID INT,       \n       passenger_count INT,\n       trip_distance FLOAT,\n       fare_amount FLOAT,\n       extra FLOAT,\n       mta_tax FLOAT,\n       tip_amount FLOAT,\n       tolls_amount FLOAT,\n       ehail_fee INT,\n       improvement_surcharge FLOAT,\n       total_amount FLOAT,\n       payment_type INT,\n       trip_type INT,\n       congestion_surcharge FLOAT\n    )\n    AS [result];\n\n\n------- Checking data scanned\n\nSELECT\n    TOP(100) *\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) \n    WITH (\n       tip_amount FLOAT,\n       trip_type INT\n    )\n    AS [result];\n    ",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_discovery",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Demo File')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
