@@ -125,7 +125,7 @@
 					"name": "nyc_taxi/discovery"
 				},
 				"content": {
-					"query": "USE nyx_taxi_discovery;\n\n-------------------------------------------------------------\n----- Identify any data quality issues in trip total amount\n-------------------------------------------------------------",
+					"query": "USE nyx_taxi_discovery;\n\n-------------------------------------------------------------\n----- Identify any data quality issues in trip total amount\n-------------------------------------------------------------\n\nSELECT\n    MIN(total_amount) AS 'Min_value',\n    MAX(total_amount) AS 'Max_value',\n    AVG(total_amount) AS 'Avg_value',\n    COUNT(1) AS 'total_number_of_records',\n    COUNT(total_amount) AS not_null_total_records\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) AS [result];\n\n\n\nSELECT\n   payment_type, COUNT(*) AS total_number_of_records\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n-- WHERE total_amount < 0\nGROUP BY payment_type\nORDER BY payment_type;",
 					"metadata": {
 						"language": "sql"
 					},
