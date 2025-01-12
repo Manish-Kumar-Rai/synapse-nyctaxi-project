@@ -94,6 +94,52 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/10_check_for_duplicates')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "nyc_taxi/discovery"
+				},
+				"content": {
+					"query": "USE nyx_taxi_discovery;\n\n-------------------------------------------------------------\n--------- Check for duplicates in the Taxi Zone Data\n-------------------------------------------------------------\n----- for locationid\nSELECT\n    LocationID,\n    COUNT(LocationID) AS 'No_of_Occurence'\nFROM \n    OPENROWSET(\n        BULK 'taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n'\n    )\n    WITH (\n       LocationID SMALLINT,\n       Borough VARCHAR(15),\n       Zone VARCHAR(50),\n       Service_Zone VARCHAR(15) 4\n    ) AS [result]\nGROUP BY LocationID\nHAVING COUNT(LocationID) > 1\nORDER BY LocationID;\n\n------ for borough column\nSELECT\n    Borough,\n    COUNT(Borough) AS 'No_of_Occurence'\nFROM \n    OPENROWSET(\n        BULK 'taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n'\n    )\n    WITH (\n       LocationID SMALLINT,\n       Borough VARCHAR(15),\n       Zone VARCHAR(50),\n       Service_Zone VARCHAR(15) 4\n    ) AS [result]\nGROUP BY Borough\nHAVING COUNT(Borough) > 1\nORDER BY Borough;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_discovery",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/11_data_quality_checks')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "nyc_taxi/discovery"
+				},
+				"content": {
+					"query": "USE nyx_taxi_discovery;\n\n-------------------------------------------------------------\n----- Identify any data quality issues in trip total amount\n-------------------------------------------------------------",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_discovery",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/1_explore_taxi_zone')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
