@@ -186,6 +186,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/14_discovery_assignment')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "nyc_taxi/discovery"
+				},
+				"content": {
+					"query": "USE nyx_taxi_discovery;\n\n--------------------------------------------------------------------------------------------------------------------------\n----- Identify the percentage of cash and credit card trips by borough\n--------------------------------------------------------------------------------------------------------------------------\n\nSELECT\n    zone.borough,\n    COUNT(1) AS total_trips,\n    SUM(CASE WHEN trip_data.payment_type = 2 THEN 1 ELSE 0 END) AS cash_trips,\n    SUM(CASE WHEN trip_data.payment_type = 1 THEN 1 ELSE 0 END) AS card_trips,\n    ROUND((CAST(SUM(CASE WHEN trip_data.payment_type = 2 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(1))*100,2) AS cash_trips_percentage,\n    ROUND((CAST(SUM(CASE WHEN trip_data.payment_type = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(1))*100,2) AS card_trips_percentage\nFROM\n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=2020/month=01/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) AS trip_data \nLEFT JOIN OPENROWSET(\n        BULK 'taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE,\n        FIELDTERMINATOR = ',',\n        ROWTERMINATOR = '\\n'\n    )\n    WITH (\n       LocationID SMALLINT,\n       Borough VARCHAR(15),\n       Zone VARCHAR(50),\n       Service_Zone VARCHAR(15) 4\n    ) AS zone\nON trip_data.PULocationID = zone.LocationID\nJOIN\n    OPENROWSET(\n        BULK 'payment_type.json',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        FIELDTERMINATOR = '0x0b',\n        FIELDQUOTE = '0x0b'\n    ) \n    WITH (\n        jsonDoc VARCHAR(MAX)\n    )\n    AS [result]\n    CROSS APPLY OPENJSON(jsonDoc)\n    WITH (\n        payment_type SMALLINT,\n        payment_type_desc VARCHAR(15) \n    ) AS payment\nON payment.payment_type = trip_data.payment_type\nWHERE trip_data.payment_type IN ('1','2')\nGROUP BY zone.borough\nORDER BY zone.borough\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_discovery",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/1_explore_taxi_zone')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
