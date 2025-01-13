@@ -5,7 +5,7 @@
 			"name": "nyc_taxi/ldw"
 		},
 		"content": {
-			"query": "USE nyc_taxi_ldw;\n\nCREATE EXTERNAL DATA SOURCE nyc_taxi_src\nWITH (\n    LOCATION = 'https://adlssynnyctaxi.dfs.core.windows.net/nyc-taxi-data'\n);\n\n",
+			"query": "USE nyc_taxi_ldw;\n\nCREATE EXTERNAL DATA SOURCE nyc_taxi_src\nWITH (\n    LOCATION = 'https://adlssynnyctaxi.dfs.core.windows.net/nyc-taxi-data'\n);\n\nSELECT [name],[location] FROM sys.external_data_sources;",
 			"metadata": {
 				"language": "sql"
 			},
