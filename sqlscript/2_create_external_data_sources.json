@@ -1,5 +1,5 @@
 {
-	"name": "2_create_external_data_source",
+	"name": "2_create_external_data_sources",
 	"properties": {
 		"folder": {
 			"name": "nyc_taxi/ldw"
