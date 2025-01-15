@@ -493,7 +493,7 @@
 					"name": "nyc_taxi/ldw"
 				},
 				"content": {
-					"query": "USE nyc_taxi_ldw;\n\nIF OBJECT_ID('silver.calender') IS NOT NULL\n    DROP EXTERNAL TABLE silver.calender\nGO\n\nCREATE EXTERNAL TABLE silver.calender\n    WITH\n    (\n        LOCATION = 'silver/calender',\n        DATA_SOURCE = nyc_taxi_src,\n        FILE_FORMAT = parquet_file_format\n    )\nAS\nSELECT\n    *\nFROM bronze.calender\n\nSELECT * FROM bronze.calender",
+					"query": "USE nyc_taxi_ldw;\n\nIF OBJECT_ID('silver.calender') IS NOT NULL\n    DROP EXTERNAL TABLE silver.calender\nGO\n\nCREATE EXTERNAL TABLE silver.calender\n    WITH\n    (\n        LOCATION = 'silver/calender',\n        DATA_SOURCE = nyc_taxi_src,\n        FILE_FORMAT = parquet_file_format\n    )\nAS\nSELECT\n    *\nFROM bronze.calender;\n\nSELECT * FROM bronze.calender;",
 					"metadata": {
 						"language": "sql"
 					},
@@ -568,6 +568,29 @@
 					},
 					"currentConnection": {
 						"databaseName": "nyc_taxi_discovery",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/9_create_silver_trip_type')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "nyc_taxi/ldw"
+				},
+				"content": {
+					"query": "USE nyc_taxi_ldw;\n\nIF OBJECT_ID('silver.trip_type') IS NOT NULL\n    DROP EXTERNAL TABLE silver.trip_type\nGO\n\nCREATE EXTERNAL TABLE silver.trip_type\n    WITH\n    (\n        LOCATION = 'silver/trip_type',\n        DATA_SOURCE = nyc_taxi_src,\n        FILE_FORMAT = parquet_file_format\n    )\nAS\nSELECT\n    *\nFROM bronze.trip_type;\n\nSELECT * FROM silver.trip_type;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_ldw",
 						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
