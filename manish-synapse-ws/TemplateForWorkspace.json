@@ -324,6 +324,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/15_create_gold_views')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "nyc_taxi/ldw"
+				},
+				"content": {
+					"query": "USE nyc_taxi_ldw;\n\n\nDROP VIEW IF EXISTS gold.vw_trip_data_green\nGO\n\nCREATE VIEW gold.vw_trip_data_green\nAS\nSELECT\n    [result].filepath(1) AS [year],\n    [result].filepath(2) AS [month],\n    [result].*\nFROM\n    OPENROWSET (\n        BULK 'gold/trip_data_green/year=*/month=*/*.parquet',\n        DATA_SOURCE = 'nyc_taxi_src',\n        FORMAT = 'PARQUET'\n    ) \n    WITH (\n        borough VARCHAR(15) 3,\n        trip_date DATE,\n        trip_day VARCHAR(10),\n        trip_day_weekend_ind CHAR(1),\n        card_trip_count INT,\n        cash_trip_count INT\n    )AS [result]\nGO\n\nSELECT * FROM gold.vw_trip_data_green\nGO\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_ldw",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/1_create_database')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -870,23 +893,6 @@
 						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/15_create_')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"folder": {
-					"name": "nyc_taxi/ldw"
-				},
-				"content": {
-					"metadata": {
-						"language": "sql"
-					}
 				},
 				"type": "SqlQuery"
 			},
