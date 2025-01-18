@@ -62,6 +62,29 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Execute Create Gold Trip Data Green Agg",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Create Silver Trip Data Green",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_create_gold_trip_data_green_agg",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"annotations": []
