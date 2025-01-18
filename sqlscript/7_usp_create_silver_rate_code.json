@@ -1,0 +1,20 @@
+{
+	"name": "7_usp_create_silver_rate_code",
+	"properties": {
+		"folder": {
+			"name": "nyc_taxi/ldw/userdefine_stored_procedure_usp"
+		},
+		"content": {
+			"query": "USE nyc_taxi_ldw\nGO\n\nCREATE OR ALTER PROCEDURE silver.usp_silver_rate_code\nAS\nBEGIN\n    IF OBJECT_ID('silver.rate_code') IS NOT NULL\n        DROP EXTERNAL TABLE silver.rate_code;\n\n    CREATE EXTERNAL TABLE silver.rate_code\n        WITH\n        (\n            LOCATION = 'silver/rate_code',\n            DATA_SOURCE = nyc_taxi_src,\n            FILE_FORMAT = parquet_file_format\n        )\n    AS\n    SELECT\n        rate_code_id, rate_code\n    FROM OPENROWSET (\n        BULK 'raw/rate_code.json',\n        DATA_SOURCE = 'nyc_taxi_src',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '1.0',\n        FIELDQUOTE = '0x0b',\n        FIELDTERMINATOR = '0x0b',\n        ROWTERMINATOR = '0x0b'\n        )\n        WITH (\n            jsonDoc NVARCHAR(MAX)\n        ) AS [result]\n        CROSS APPLY OPENJSON(jsonDoc)\n        WITH (\n            rate_code_id SMALLINT,\n            rate_code VARCHAR(15)\n        );\n\nEND;\n\n\n    ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_ldw",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
