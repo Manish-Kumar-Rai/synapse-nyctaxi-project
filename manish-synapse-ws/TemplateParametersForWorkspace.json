@@ -8,11 +8,11 @@
 		"manish-synapse-ws-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:manish-synapse-ws.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
-		"manish-synapse-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
-			"value": "https://adlssynnyctaxi.dfs.core.windows.net"
-		},
 		"ls_manishsynapsedl_properties_typeProperties_url": {
 			"value": "https://adlssynnyctaxi.dfs.core.windows.net/"
+		},
+		"manish-synapse-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://adlssynnyctaxi.dfs.core.windows.net"
 		}
 	}
 }
