@@ -16,7 +16,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"folderPath": {
-					"value": "@concat('silver/',dataset().p_folder_name)",
+					"value": "@dataset().p_folder_path",
 					"type": "Expression"
 				},
 				"fileSystem": "nyc-taxi-data"
