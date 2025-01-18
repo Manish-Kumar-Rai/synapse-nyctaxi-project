@@ -40,7 +40,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "ForEach1 Folder Path",
+						"name": "For Each Folder Path",
 						"type": "ForEach",
 						"dependsOn": [],
 						"userProperties": [],
@@ -52,7 +52,7 @@
 							"isSequential": true,
 							"activities": [
 								{
-									"name": "Delete Silver Taxi Zone Folder",
+									"name": "Delete Silver Older",
 									"type": "Delete",
 									"dependsOn": [],
 									"policy": {
@@ -83,11 +83,11 @@
 									}
 								},
 								{
-									"name": "Create Silver Taxi Zone Table",
+									"name": "Create Silver Table",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "Delete Silver Taxi Zone Folder",
+											"activity": "Delete Silver Older",
 											"dependencyConditions": [
 												"Succeeded"
 											]
