@@ -2,7 +2,7 @@
 	"name": "4_usp_create_silver_calender",
 	"properties": {
 		"folder": {
-			"name": "nyc_taxi/ldw"
+			"name": "nyc_taxi/ldw/userdefine_stored_procedure_usp"
 		},
 		"content": {
 			"query": "USE nyc_taxi_ldw\nGO\n\nCREATE OR ALTER PROC silver.usp_silver_calender\nAS\nBEGIN\n\n    IF OBJECT_ID('silver.calender') IS NOT NULL\n        DROP EXTERNAL TABLE silver.calender;\n\n    CREATE EXTERNAL TABLE silver.calender\n        WITH\n        (\n            LOCATION = 'silver/calender',\n            DATA_SOURCE = nyc_taxi_src,\n            FILE_FORMAT = parquet_file_format\n        )\n    AS\n    SELECT\n        *\n    FROM bronze.calender;\n\nEND;\n\n",
