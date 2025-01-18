@@ -10,6 +10,9 @@
 		},
 		"manish-synapse-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://adlssynnyctaxi.dfs.core.windows.net"
+		},
+		"ls_manishsynapsedl_properties_typeProperties_url": {
+			"value": "https://adlssynnyctaxi.dfs.core.windows.net/"
 		}
 	}
 }
