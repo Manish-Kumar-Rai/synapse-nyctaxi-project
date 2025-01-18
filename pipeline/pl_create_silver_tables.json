@@ -15,7 +15,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Delete Silver Folder",
+							"name": "Delete Silver Older",
 							"type": "Delete",
 							"dependsOn": [],
 							"policy": {
@@ -50,7 +50,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Delete Silver Folder",
+									"activity": "Delete Silver Older",
 									"dependencyConditions": [
 										"Succeeded"
 									]
