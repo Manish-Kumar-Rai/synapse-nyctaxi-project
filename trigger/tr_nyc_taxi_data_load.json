@@ -9,7 +9,7 @@
 			"recurrence": {
 				"frequency": "Minute",
 				"interval": 15,
-				"startTime": "2025-01-18T16:50:00",
+				"startTime": "2025-01-18T17:50:00",
 				"endTime": "2025-01-18T17:53:00",
 				"timeZone": "Central European Standard Time"
 			}
