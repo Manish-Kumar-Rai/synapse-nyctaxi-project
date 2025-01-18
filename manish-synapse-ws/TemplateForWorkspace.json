@@ -411,6 +411,9 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
+				"folder": {
+					"name": "Demo"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -480,6 +483,9 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Demo"
 				},
 				"annotations": []
 			},
@@ -710,6 +716,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_manishsynapsedl",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo"
 				},
 				"annotations": [],
 				"type": "Parquet",
