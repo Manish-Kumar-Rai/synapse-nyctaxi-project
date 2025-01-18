@@ -34,6 +34,15 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/coursepool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/pl_create_gold_trip_data_green')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -901,6 +910,37 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/tr_nyc_taxi_data_load')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_execute_all_pipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2025-01-18T17:50:00",
+						"endTime": "2025-01-18T17:53:00",
+						"timeZone": "Central European Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/pl_execute_all_pipeline')]"
 			]
 		},
 		{
@@ -1876,35 +1916,252 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/tr_nyc_taxi_data_load')]",
-			"type": "Microsoft.Synapse/workspaces/triggers",
+			"name": "[concat(parameters('workspaceName'), '/1_spark_create_gold_trip_data_green_agg')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_execute_all_pipeline",
-							"type": "PipelineReference"
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "coursepool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "2a274bc0-37b8-460e-b37d-b0e13c257612"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/1e128322-0739-4ad7-8ec7-b4e9e4703cfc/resourceGroups/manish-synapse-rg/providers/Microsoft.Synapse/workspaces/manish-synapse-ws/bigDataPools/coursepool",
+						"name": "coursepool",
+						"type": "Spark",
+						"endpoint": "https://manish-synapse-ws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/coursepool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
 						},
-						"parameters": {}
+						"sparkVersion": "3.4",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 5
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Trip Data Aggregation \n",
+							"### Group By Columns\n",
+							"1. year\n",
+							"2. Month\n",
+							"3. Pickup Location ID\n",
+							"4. Drop Off Location ID\n",
+							"\n",
+							"### Aggregated Columns\n",
+							"1. Total Trip Count\n",
+							"2. Total Fare Amount\n",
+							"\n",
+							"### Purpose of the notebook\n",
+							"\n",
+							"Demonstrate the integration between Spark Pool and Serverless SQL Pool\n",
+							"\n",
+							"1. Create the aggregated table in Spark Pool\n",
+							"2. Access the data from Serverless SQL Pool "
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#Set the folder paths so that it can be used later. \n",
+							"bronze_folder_path = 'abfss://nyc-taxi-data@adlssynnyctaxi.dfs.core.windows.net/raw'\n",
+							"silver_folder_path = 'abfss://nyc-taxi-data@adlssynnyctaxi.dfs.core.windows.net/silver'\n",
+							"gold_folder_path = 'abfss://nyc-taxi-data@adlssynnyctaxi.dfs.core.windows.net/gold'"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#Set the spark config to be able to get the partitioned columns year and month as strings rather than integers\n",
+							"spark.conf.set(\"spark.sql.sources.partitionColumnTypeInference.enabled\", \"false\")"
+						],
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\n",
+							"\n",
+							"-- Create database to which we are going to write the data\n",
+							"\n",
+							"CREATE DATABASE IF NOT EXISTS nyc_taxi_ldw_spark\n",
+							"LOCATION 'abfss://nyc-taxi-data@adlssynnyctaxi.dfs.core.windows.net/gold';"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Read the silver data to be processed. \n",
+							"trip_data_green_df = spark.read.parquet(f\"{silver_folder_path}/trip_data_green\") "
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Perform the required aggregations\n",
+							"# 1. Total trip count\n",
+							"# 2. Total fare amount\n",
+							"from pyspark.sql.functions import *\n",
+							"\n",
+							"trip_data_green_agg_df = trip_data_green_df \\\n",
+							"                        .groupBy(\"year\", \"month\", \"pu_location_id\", \"do_location_id\") \\\n",
+							"                        .agg(count(lit(1)).alias(\"total_trip_count\"),\n",
+							"                        round(sum(\"fare_amount\"), 2).alias(\"total_fare_amount\"))"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Write the aggregated data to the gold table for consumption\n",
+							"\n",
+							"trip_data_green_agg_df.write.mode(\"overwrite\").partitionBy(\"year\", \"month\").format(\"parquet\").saveAsTable(\"nyc_taxi_ldw_spark.trip_data_green_agg\")"
+						],
+						"outputs": [],
+						"execution_count": 6
 					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 15,
-						"startTime": "2025-01-18T17:50:00",
-						"endTime": "2025-01-18T17:53:00",
-						"timeZone": "Central European Standard Time"
-					}
-				}
+				]
 			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/pipelines/pl_execute_all_pipeline')]"
-			]
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/coursepool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 5
+				},
+				"autoScale": {
+					"enabled": false,
+					"maxNodeCount": 0,
+					"minNodeCount": 0
+				},
+				"nodeCount": 3,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.4",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": true,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "germanywestcentral"
 		}
 	]
 }
