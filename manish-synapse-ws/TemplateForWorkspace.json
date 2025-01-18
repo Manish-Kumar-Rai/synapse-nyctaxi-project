@@ -19,6 +19,14 @@
 		"manish-synapse-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adlssynnyctaxi.dfs.core.windows.net"
+		},
+		"ls_serverless_sql_db_nyc_taxi_ldw_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "tcp:manish-synapse-ws-ondemand.sql.azuresynapse.net,1433"
+		},
+		"ls_serverless_sql_db_nyc_taxi_ldw_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "nyc_taxi_ldw"
 		}
 	},
 	"variables": {
@@ -987,6 +995,29 @@
 				"type": "SqlQuery"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_serverless_sql_db_nyc_taxi_ldw')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"server": "[parameters('ls_serverless_sql_db_nyc_taxi_ldw_properties_typeProperties_server')]",
+					"database": "[parameters('ls_serverless_sql_db_nyc_taxi_ldw_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SystemAssignedManagedIdentity"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
 		}
 	]
 }
