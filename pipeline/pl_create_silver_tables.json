@@ -80,14 +80,6 @@
 			}
 		],
 		"variables": {
-			"v_folder_path": {
-				"type": "String",
-				"defaultValue": "calender"
-			},
-			"v_usp_name": {
-				"type": "String",
-				"defaultValue": "silver.usp_silver_calender"
-			},
 			"v_folder_path_usp_name_array": {
 				"type": "Array",
 				"defaultValue": [
