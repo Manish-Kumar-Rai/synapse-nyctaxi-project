@@ -34,15 +34,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/coursepool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/pl_create_gold_trip_data_green')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -2233,6 +2224,20 @@
 			},
 			"dependsOn": [],
 			"location": "germanywestcentral"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_power_bi_synapse_integration_ws')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "PowerBIWorkspace",
+				"typeProperties": {
+					"workspaceID": "52e68da6-0b9a-46e6-8d5c-03e0d53cc9b0",
+					"tenantID": "33b4e7a4-63fc-4a86-bf05-57dc9c183a6f"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
