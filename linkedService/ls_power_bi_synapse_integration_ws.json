@@ -1,0 +1,11 @@
+{
+	"name": "ls_power_bi_synapse_integration_ws",
+	"properties": {
+		"annotations": [],
+		"type": "PowerBIWorkspace",
+		"typeProperties": {
+			"workspaceID": "52e68da6-0b9a-46e6-8d5c-03e0d53cc9b0",
+			"tenantID": "33b4e7a4-63fc-4a86-bf05-57dc9c183a6f"
+		}
+	}
+}
