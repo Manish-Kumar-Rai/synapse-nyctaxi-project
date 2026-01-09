@@ -35,6 +35,7 @@ The solution follows a **modern cloud data architecture**:
 ├── trigger/                  # Pipeline triggers (scheduled/event-based)
 ├── publish_config.json       # Synapse publish configuration
 └── README.md                 # Project documentation
+```
 
 ## 🔄 Data Processing Flow
 
